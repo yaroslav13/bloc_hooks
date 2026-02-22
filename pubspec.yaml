@@ -1,0 +1,18 @@
+name: bloc_hooks
+description: The state management solution for Flutter, based on the BLoC pattern, with Hooks support.
+version: 1.0.0
+repository: https://github.com/yaroslav13/bloc_hooks
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: ">=3.27.0"
+
+dependencies:
+  bloc: ^9.2.0
+  flutter:
+    sdk: flutter
+  flutter_hooks: ^0.21.3+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
