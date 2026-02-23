@@ -5,7 +5,7 @@ import 'package:bloc_hooks/src/hooks/use_bloc_listen.dart';
 import 'package:bloc_hooks/src/hooks/use_bloc_watch.dart';
 import 'package:bloc_hooks/src/scope/bloc_scope_registry.dart';
 import 'package:bloc_hooks/src/types/types.dart';
-import 'package:bloc_hooks/src/utils/find_bloc.dart';
+import 'package:bloc_hooks/src/utils/lookup_bloc.dart';
 import 'package:bloc_hooks/src/utils/where_state_changed.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -81,7 +81,7 @@ final class _SelectBlocHookState<S, V>
   @override
   void initHook() {
     final scope = BlocScopeRegistry.instance.lookup(context);
-    _bloc = findBloc(context, findMethod: scope.getBlocByState<S>);
+    _bloc = lookupBloc(context, locator: scope.getBlocByState<S>);
     _selectedValue = hook.selector(_bloc.state);
 
     _subscribeStateChanges();

@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 /// Resolves a value of type [B] by first checking the given [context]
 /// and then walking up the ancestor element tree.
 ///
-/// [findMethod] is called with the current [context] first. If it
+/// [locator] is called with the current [context] first. If it
 /// returns `null`, [BuildContext.visitAncestorElements] is used to
 /// probe each ancestor until a non-null result is found.
 ///
@@ -17,11 +17,11 @@ import 'package:flutter/widgets.dart';
 /// This is an internal utility used by the public hooks ([useBloc],
 /// [useBlocWatch], [useBlocSelect], etc.) and is not exported from
 /// the package's public API.
-B findBloc<B>(
+B lookupBloc<B>(
   BuildContext context, {
-  required B? Function(BuildContext) findMethod,
+  required B? Function(BuildContext) locator,
 }) {
-  final bloc = findMethod(context);
+  final bloc = locator(context);
 
   if (bloc != null) {
     return bloc;
@@ -30,7 +30,7 @@ B findBloc<B>(
 
     context.visitAncestorElements(
       (element) {
-        found = findMethod(element);
+        found = locator(element);
 
         return found == null;
       },

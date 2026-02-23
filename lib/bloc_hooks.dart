@@ -8,4 +8,5 @@ export 'src/hooks/use_bloc_read.dart';
 export 'src/hooks/use_bloc_scope.dart';
 export 'src/hooks/use_bloc_select.dart';
 export 'src/hooks/use_bloc_watch.dart';
+export 'src/scope/bloc_scope_provider.dart';
 export 'src/types/types.dart';

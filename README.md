@@ -24,9 +24,6 @@ A hooks-based integration for [bloc](https://pub.dev/packages/bloc) state manage
   - [Define effects](#define-effects)
   - [Create a cubit with effects](#create-a-cubit-with-effects)
   - [Listen to effects in UI](#listen-to-effects-in-ui)
-- [Architecture Overview](#architecture-overview)
-- [API Reference](#api-reference)
-- [Error Handling](#error-handling)
 
 ---
 
@@ -267,13 +264,6 @@ class TodoCubit extends Cubit<TodoState> with Effects<TodoEffect> {
 }
 ```
 
-The mixin provides:
-
-| Member | Description |
-|--------|-------------|
-| `emitEffect(E)` | Dispatches a new effect to listeners |
-| `effectsStream` | The broadcast stream of effects |
-
 ### Listen to effects in UI
 
 Use `useBlocEffects<E>()` to subscribe. The callback receives the current `BuildContext` and the effect:
@@ -311,74 +301,51 @@ class TodoPage extends HookWidget {
 
 ---
 
-## Architecture Overview
+## Architecture: Expando-based Scoping
 
-```
-HookWidget
-  └─ useBlocScope(factory)          ← registers a BlocFactory
-       │
-       ├─ BlocScopeRegistry         ← singleton; maps BuildContext → BlocScope
-       │     └─ BlocScope           ← holds created bloc instances per slot
-       │
-       └─ Child HookWidget
-            ├─ bindBloc<B, S>()     ← creates & stores a bloc in the nearest scope
-            ├─ useBloc<B>()         ← resolves the nearest bound bloc
-            ├─ useBlocWatch<S>()    ← subscribes to state stream, rebuilds widget
-            ├─ useBlocSelect<S,V>() ← subscribes to derived value, rebuilds widget
-            ├─ useBlocListen<S>()   ← side-effect listener, no rebuild
-            ├─ useBlocRead<S>()     ← one-time read, no rebuild
-            └─ useBlocEffects<E>()  ← listens to one-shot effects
-```
+Unlike most Flutter state-management libraries, `bloc_hooks` does **not** rely on `InheritedWidget` for scoping. Instead it uses Dart's [`Expando`](https://api.dart.dev/stable/dart-core/Expando-class.html) — a weak-map that attaches metadata to arbitrary objects without modifying them.
 
-Key design decisions:
+### How it works
 
-- **No `InheritedWidget`** — scopes are attached to `BuildContext` via `Expando`, avoiding the rebuild cascade of inherited models.
-- **Tree walking** — `useBloc`, `useBlocWatch`, etc. walk up the element tree to find the nearest scope and bloc, similar to how `Provider` resolves dependencies.
-- **Automatic disposal** — blocs are closed when their binding widget is removed; scopes dispose all remaining blocs on unregistration.
+1. **`BlocScopeRegistry`** holds an `Expando<BlocScope>` that maps each `BuildContext` to its `BlocScope`:
 
----
+   ```dart
+   final _expando = Expando<BlocScope>('BlocFactoryRegistry');
+   ```
 
-## API Reference
+   When `useBlocScope` is called, the registry attaches a new `BlocScope` to that widget's `BuildContext`:
 
-| Hook / Function | Signature | Purpose | Rebuilds? |
-|---|---|---|---|
-| `useBlocScope` | `void useBlocScope(BlocFactory)` | Register a bloc factory for the subtree | No |
-| `bindBloc` | `void bindBloc<B, S>({onCreated, onDisposed})` | Create & bind a bloc to the widget tree | No |
-| `useBloc` | `B useBloc<B>()` | Get the nearest bound bloc instance | No |
-| `useBlocWatch` | `S useBlocWatch<S>({when})` | Subscribe to full state changes | Yes |
-| `useBlocSelect` | `V useBlocSelect<S, V>(selector, {when})` | Subscribe to a derived value | Yes (when value changes) |
-| `useBlocListen` | `void useBlocListen<S>(listener, {when})` | Side-effect listener on state changes | No |
-| `useBlocRead` | `S useBlocRead<S>()` | One-time non-reactive state read | No |
-| `useBlocEffects` | `void useBlocEffects<E>(onEffect, [keys])` | Listen to one-shot effects from a bloc | No |
+   ```dart
+   void register(BuildContext context, BlocFactory factory) {
+     _expando[context] ??= BlocScope(context, factory);
+   }
+   ```
 
-### Types
+2. **`BlocScope`** itself uses a second `Expando<List<BlocBase<Object>>>` to store bloc instances per *slot* (the `BuildContext` of the widget that called `bindBloc`):
 
-| Type | Definition |
-|------|------------|
-| `BlocFactory` | `B Function<B extends BlocBase<Object>>()` — generic factory used to create bloc instances |
-| `Effects<E>` | Mixin on `Closable` — adds effect emission (`emitEffect`) and an `effectsStream` to a bloc |
-| `EffectEmitter<E>` | Interface — contract for effect emission and stream access |
+   ```dart
+   final _slotsExpando = Expando<List<BlocBase<Object>>>('BlocFactory.slots');
+   ```
 
----
+   This lets multiple descendant widgets own distinct bloc instances while sharing the same factory.
 
-## Error Handling
+3. **Resolution** walks up the element tree manually via `BuildContext.visitAncestorElements`, probing the `Expando` at each ancestor until a scope is found:
 
-All exceptions extend `BlocHooksException`:
+   ```dart
+   BlocScope lookup(BuildContext context) {
+     var scope = _expando[context];
+     if (scope != null) return scope;
 
-| Exception | Thrown when |
-|-----------|------------|
-| `BlocScopeNotBoundException` | No `useBlocScope` was called above the requesting widget |
-| `BlocNotFoundException<B>` | The requested bloc type was not found in any ancestor scope |
-| `BlocRemovalException<B>` | Attempting to remove a bloc that was never bound |
-| `BlocDuplicateBindingException<B>` | `bindBloc` is called twice for the same type in the same widget |
+     BlocScope? nearestScope;
+     context.visitAncestorElements((element) {
+       nearestScope = _expando[element];
+       return nearestScope == null;
+     });
 
-```dart
-try {
-  final cubit = useBloc<TodoCubit>();
-} on BlocHooksException catch (e) {
-  debugPrint(e.message);
-}
-```
+     if (nearestScope != null) return nearestScope!;
+     throw const BlocScopeNotBoundException();
+   }
+   ```
 
 ---
 

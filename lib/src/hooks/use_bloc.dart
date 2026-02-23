@@ -5,7 +5,7 @@ import 'package:bloc_hooks/src/hooks/use_bloc_read.dart';
 import 'package:bloc_hooks/src/hooks/use_bloc_select.dart';
 import 'package:bloc_hooks/src/hooks/use_bloc_watch.dart';
 import 'package:bloc_hooks/src/scope/bloc_scope_registry.dart';
-import 'package:bloc_hooks/src/utils/find_bloc.dart';
+import 'package:bloc_hooks/src/utils/lookup_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -55,9 +55,9 @@ B useBloc<B extends BlocBase<Object>>() {
     () {
       final scope = BlocScopeRegistry.instance.lookup(context);
 
-      final bloc = findBloc(
+      final bloc = lookupBloc(
         context,
-        findMethod: scope.getBloc<B>,
+        locator: scope.getBloc<B>,
       );
 
       return bloc;

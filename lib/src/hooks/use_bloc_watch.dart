@@ -7,7 +7,7 @@ import 'package:bloc_hooks/src/hooks/use_bloc_select.dart';
 import 'package:bloc_hooks/src/scope/bloc_scope.dart';
 import 'package:bloc_hooks/src/scope/bloc_scope_registry.dart';
 import 'package:bloc_hooks/src/types/types.dart';
-import 'package:bloc_hooks/src/utils/find_bloc.dart';
+import 'package:bloc_hooks/src/utils/lookup_bloc.dart';
 import 'package:bloc_hooks/src/utils/where_state_changed.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -16,8 +16,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 /// whenever a new state is emitted.
 ///
 /// Resolves the nearest bloc whose state type is [S] from the
-/// [BlocScope] tree (via [BlocScopeRegistry.instance.lookup] + [findBloc]) and
-/// returns the current state. On each qualifying emission the
+/// [BlocScope] tree (via [BlocScopeRegistry.instance.lookup] + [lookupBloc])
+/// and returns the current state. On each qualifying emission the
 /// widget is marked dirty and rebuilt with the latest value.
 ///
 /// Must be called inside a [HookWidget.build] method.
@@ -71,7 +71,7 @@ final class _WatchBlocHookState<S> extends HookState<S, _WatchBlocHook<S>> {
   @override
   void initHook() {
     final scope = BlocScopeRegistry.instance.lookup(context);
-    _bloc = findBloc(context, findMethod: scope.getBlocByState<S>);
+    _bloc = lookupBloc(context, locator: scope.getBlocByState<S>);
     _state = _bloc.state;
 
     _subscribeStateChanges();

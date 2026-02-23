@@ -2,7 +2,7 @@ import 'package:bloc_hooks/src/effects/effect_emitter.dart';
 import 'package:bloc_hooks/src/effects/effects.dart';
 import 'package:bloc_hooks/src/hooks/use_bloc_listen.dart';
 import 'package:bloc_hooks/src/scope/bloc_scope_registry.dart';
-import 'package:bloc_hooks/src/utils/find_bloc.dart';
+import 'package:bloc_hooks/src/utils/lookup_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -65,9 +65,9 @@ void useBlocEffects<E extends Object>(
     () {
       final scope = BlocScopeRegistry.instance.lookup(context);
 
-      final bloc = findBloc(
+      final bloc = lookupBloc(
         context,
-        findMethod: scope.getBlocWithEffects<E>,
+        locator: scope.getBlocWithEffects<E>,
       );
 
       final subscription = bloc.effectsStream.listen(
