@@ -24,6 +24,7 @@ A hooks-based integration for [bloc](https://pub.dev/packages/bloc) state manage
   - [Define effects](#define-effects)
   - [Create a cubit with effects](#create-a-cubit-with-effects)
   - [Listen to effects in UI](#listen-to-effects-in-ui)
+- [Expando-based Scoping](#expando-based-scoping)
 
 ---
 
@@ -301,51 +302,10 @@ class TodoPage extends HookWidget {
 
 ---
 
-## Architecture: Expando-based Scoping
+## Expando-based Scoping
 
-Unlike most Flutter state-management libraries, `bloc_hooks` does **not** rely on `InheritedWidget` for scoping. Instead it uses Dart's [`Expando`](https://api.dart.dev/stable/dart-core/Expando-class.html) — a weak-map that attaches metadata to arbitrary objects without modifying them.
+`bloc_hooks` uses Dart's [`Expando`](https://api.dart.dev/stable/dart-core/Expando-class.html) — a weak-map that attaches metadata to arbitrary objects without modifying them.
 
-### How it works
-
-1. **`BlocScopeRegistry`** holds an `Expando<BlocScope>` that maps each `BuildContext` to its `BlocScope`:
-
-   ```dart
-   final _expando = Expando<BlocScope>('BlocFactoryRegistry');
-   ```
-
-   When `useBlocScope` is called, the registry attaches a new `BlocScope` to that widget's `BuildContext`:
-
-   ```dart
-   void register(BuildContext context, BlocFactory factory) {
-     _expando[context] ??= BlocScope(context, factory);
-   }
-   ```
-
-2. **`BlocScope`** itself uses a second `Expando<List<BlocBase<Object>>>` to store bloc instances per *slot* (the `BuildContext` of the widget that called `bindBloc`):
-
-   ```dart
-   final _slotsExpando = Expando<List<BlocBase<Object>>>('BlocFactory.slots');
-   ```
-
-   This lets multiple descendant widgets own distinct bloc instances while sharing the same factory.
-
-3. **Resolution** walks up the element tree manually via `BuildContext.visitAncestorElements`, probing the `Expando` at each ancestor until a scope is found:
-
-   ```dart
-   BlocScope lookup(BuildContext context) {
-     var scope = _expando[context];
-     if (scope != null) return scope;
-
-     BlocScope? nearestScope;
-     context.visitAncestorElements((element) {
-       nearestScope = _expando[element];
-       return nearestScope == null;
-     });
-
-     if (nearestScope != null) return nearestScope!;
-     throw const BlocScopeNotBoundException();
-   }
-   ```
 
 ---
 
