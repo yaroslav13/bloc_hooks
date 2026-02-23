@@ -3,7 +3,7 @@ import 'package:bloc_hooks/src/hooks/use_bloc.dart';
 import 'package:bloc_hooks/src/hooks/use_bloc_select.dart';
 import 'package:bloc_hooks/src/hooks/use_bloc_watch.dart';
 import 'package:bloc_hooks/src/scope/bloc_scope_registry.dart';
-import 'package:bloc_hooks/src/utils/find_bloc.dart';
+import 'package:bloc_hooks/src/utils/lookup_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -44,9 +44,9 @@ S useBlocRead<S>() {
     () {
       final scope = BlocScopeRegistry.instance.lookup(context);
 
-      final bloc = findBloc<BlocBase<S>>(
+      final bloc = lookupBloc<BlocBase<S>>(
         context,
-        findMethod: scope.getBlocByState<S>,
+        locator: scope.getBlocByState<S>,
       );
 
       return bloc.state;
