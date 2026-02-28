@@ -22,7 +22,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 ///
 /// Must be called inside a [HookWidget.build] method.
 ///
-/// Throws a [BlocNotFoundException] if no bloc of type [B] has been
+/// Throws a [NotFoundException] if no bloc of type [B] has been
 /// bound (via [bindBloc]) in the current context or any ancestor.
 ///
 /// ### Example

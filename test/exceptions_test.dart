@@ -22,7 +22,7 @@ void main() {
         ),
       );
 
-      expect(tester.takeException(), isA<BlocScopeNotBoundException>());
+      expect(tester.takeException(), isA<NoBlocScopeFoundException>());
     });
 
     testWidgets('BlocNotFoundException when no bindBloc for requested type',
@@ -48,7 +48,7 @@ void main() {
 
       expect(
         tester.takeException(),
-        isA<BlocNotFoundException<BlocBase<TodoState>>>(),
+        isA<NotFoundException<BlocBase<TodoState>>>(),
       );
     });
 
@@ -77,23 +77,23 @@ void main() {
     });
 
     test('BlocScopeNotBoundException has descriptive message', () {
-      const e = BlocScopeNotBoundException();
+      const e = NoBlocScopeFoundException();
       expect(e.message, contains('useBlocScope()'));
       expect(e.toString(), e.message);
     });
 
     test('BlocNotFoundException message includes the type', () {
-      final e = BlocNotFoundException<TodoCubit>();
+      final e = NotFoundException<TodoCubit>();
       expect(e.message, contains('TodoCubit'));
     });
 
     test('BlocRemovalException message includes the type', () {
-      final e = BlocRemovalException<TodoCubit>();
+      final e = RemovalException<TodoCubit>();
       expect(e.message, contains('TodoCubit'));
     });
 
     test('BlocDuplicateBindingException message includes type and host', () {
-      final e = BlocDuplicateBindingException<TodoCubit>('MyPage');
+      final e = AlreadyBindException<TodoCubit>('MyPage');
       expect(e.message, contains('TodoCubit'));
       expect(e.message, contains('MyPage'));
     });

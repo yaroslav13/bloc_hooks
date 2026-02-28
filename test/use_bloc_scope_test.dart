@@ -50,7 +50,7 @@ void main() {
         ),
       );
 
-      expect(tester.takeException(), isA<BlocScopeNotBoundException>());
+      expect(tester.takeException(), isA<NoBlocScopeFoundException>());
     });
 
     testWidgets('disposes all blocs when scope is removed from tree',

@@ -43,7 +43,7 @@ final class BlocScopeRegistry {
   /// [BuildContext.visitAncestorElements] and returns the first
   /// [BlocScope] found.
   ///
-  /// Throws a [BlocScopeNotBoundException] if no [BlocScope] is found
+  /// Throws a [NoBlocScopeFoundException] if no [BlocScope] is found
   /// anywhere in the ancestor chain. This typically means [useBlocScope]
   /// was never called above the requesting widget.
   ///
@@ -76,7 +76,7 @@ final class BlocScopeRegistry {
       return scope;
     }
 
-    throw const BlocScopeNotBoundException();
+    throw const NoBlocScopeFoundException();
   }
 
   /// Registers a [BlocFactory] at the given [context].

@@ -70,7 +70,7 @@ final class BlocScope {
 
   /// Removes and closes the bloc of type [B] from [context].
   ///
-  /// Throws a [BlocRemovalException] if no bloc of type [B] was found
+  /// Throws a [RemovalException] if no bloc of type [B] was found
   /// in [context].
   Future<void> removeBloc<B extends BlocBase<S>, S extends Object>(
     BuildContext context,
@@ -79,7 +79,7 @@ final class BlocScope {
     final blocRemoved = _blocsByContext[context]?.remove(bloc) ?? false;
 
     if (!blocRemoved || bloc == null) {
-      throw BlocRemovalException<B>();
+      throw RemovalException<B>();
     }
 
     _scopedBlocs.remove(bloc);
