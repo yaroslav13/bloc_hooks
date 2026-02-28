@@ -13,12 +13,12 @@ import 'package:flutter/material.dart';
 ///
 /// Each [BlocScope] is created by [BlocScopeRegistry.register] and is
 /// tied to the [BuildContext] where [useBlocScope] was called. Blocs
-/// are stored per *slot* — a descendant [BuildContext] passed to
+/// are stored per *context* — a descendant [BuildContext] passed to
 /// [createBloc] via [bindBloc] — so different widgets in the subtree
 /// can own distinct bloc instances while sharing the same factory.
 ///
 /// When the scope is disposed (via [dispose]), **all** blocs that were
-/// created through it are closed, regardless of which slot owns them.
+/// created through it are closed, regardless of which context owns them.
 ///
 /// See also:
 ///
@@ -35,60 +35,61 @@ final class BlocScope {
   /// The generic factory function used to instantiate blocs by type.
   final BlocFactory factory;
 
-  final _slotsExpando = Expando<List<BlocBase<Object>>>('BlocFactory.slots');
-  final _allBlocs = <BlocBase<Object>>[];
+  final _blocsByContext =
+      Expando<List<BlocBase<Object>>>('BlocScope.blocsByContext');
+  final _scopedBlocs = <BlocBase<Object>>[];
 
   /// Creates a new bloc of type [B] with state [S] using [factory] and
-  /// stores it in the slot identified by [slot].
+  /// stores it in the context identified by [context].
   ///
   /// Returns the newly created bloc instance.
-  B createBloc<B extends BlocBase<S>, S extends Object>(BuildContext slot) {
+  B createBloc<B extends BlocBase<S>, S extends Object>(BuildContext context) {
     final bloc = factory<B>();
 
-    final currentListOfBlocs = (_slotsExpando[slot] ?? [])..add(bloc);
+    final contextBlocs = (_blocsByContext[context] ?? [])..add(bloc);
 
-    _slotsExpando[slot] = currentListOfBlocs;
-    _allBlocs.add(bloc);
+    _blocsByContext[context] = contextBlocs;
+    _scopedBlocs.add(bloc);
 
     return bloc;
   }
 
-  /// Returns the bloc of type [B] stored in [slot], or `null` if no
+  /// Returns the bloc of type [B] stored in [context], or `null` if no
   /// such bloc exists.
-  B? getBloc<B extends BlocBase<Object>>(BuildContext slot) {
-    return _slotsExpando[slot]?.whereType<B>().firstOrNull;
+  B? getBloc<B extends BlocBase<Object>>(BuildContext context) {
+    return _blocsByContext[context]?.whereType<B>().firstOrNull;
   }
 
-  /// Returns the first bloc whose state type matches [S] in [slot],
+  /// Returns the first bloc whose state type matches [S] in [context],
   /// or `null` if none is found.
-  BlocBase<S>? getBlocByState<S>(BuildContext slot) {
-    return _slotsExpando[slot]
+  BlocBase<S>? getBlocByState<S>(BuildContext context) {
+    return _blocsByContext[context]
         ?.whereType<StateStreamableSource<S>>()
         .firstOrNull as BlocBase<S>?;
   }
 
-  /// Removes and closes the bloc of type [B] from [slot].
+  /// Removes and closes the bloc of type [B] from [context].
   ///
   /// Throws a [BlocRemovalException] if no bloc of type [B] was found
-  /// in [slot].
+  /// in [context].
   Future<void> removeBloc<B extends BlocBase<S>, S extends Object>(
-    BuildContext slot,
+    BuildContext context,
   ) async {
-    final bloc = getBloc<B>(slot);
-    final blocRemoved = _slotsExpando[slot]?.remove(bloc) ?? false;
+    final bloc = getBloc<B>(context);
+    final blocRemoved = _blocsByContext[context]?.remove(bloc) ?? false;
 
     if (!blocRemoved || bloc == null) {
       throw BlocRemovalException<B>();
     }
 
-    _allBlocs.remove(bloc);
+    _scopedBlocs.remove(bloc);
     await bloc.close();
   }
 
-  /// Returns the first bloc in [slot] that implements [EffectEmitter]<[E]>,
+  /// Returns the first bloc in [context] that implements [EffectEmitter]<[E]>,
   /// or `null` if none is found.
-  EffectEmitter<E>? getBlocWithEffects<E>(BuildContext slot) {
-    return _slotsExpando[slot]?.whereType<EffectEmitter<E>>().firstOrNull;
+  EffectEmitter<E>? getBlocWithEffects<E>(BuildContext context) {
+    return _blocsByContext[context]?.whereType<EffectEmitter<E>>().firstOrNull;
   }
 
   /// Closes **all** blocs created through this scope (in reverse
@@ -99,9 +100,9 @@ final class BlocScope {
   Future<void> dispose() async {
     await Future.wait(
       [
-        for (final bloc in _allBlocs.reversed) bloc.close(),
+        for (final bloc in _scopedBlocs.reversed) bloc.close(),
       ],
     );
-    _allBlocs.clear();
+    _scopedBlocs.clear();
   }
 }

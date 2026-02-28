@@ -50,7 +50,7 @@ final class BlocScopeNotBoundException extends BlocHooksException {
 }
 
 /// Thrown when attempting to remove a bloc of type [B] from a [BlocScope],
-/// but no bloc of that type was previously bound to the given slot.
+/// but no bloc of that type was previously bound to the given context.
 ///
 /// This typically means [bindBloc] was never called for [B] before
 /// calling remove.
