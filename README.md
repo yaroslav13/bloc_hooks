@@ -25,6 +25,7 @@ A hooks-based integration for [bloc](https://pub.dev/packages/bloc) state manage
   - [Create a cubit with effects](#create-a-cubit-with-effects)
   - [Listen to effects in UI](#listen-to-effects-in-ui)
 - [Expando-based Scoping](#expando-based-scoping)
+- [Alternatives](#alternatives)
 
 ---
 
@@ -299,6 +300,12 @@ class TodoPage extends HookWidget {
 
 `bloc_hooks` uses Dart's [`Expando`](https://api.dart.dev/stable/dart-core/Expando-class.html) — a weak-map that attaches metadata to arbitrary objects without modifying them.
 
+
+---
+
+## Alternatives
+
+- [hooked_bloc](https://pub.dev/packages/hooked_bloc) — a similar hooks-based approach to using `bloc` with `flutter_hooks`.
 
 ---
 
