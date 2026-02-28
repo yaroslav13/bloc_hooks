@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 /// returns `null`, [BuildContext.visitAncestorElements] is used to
 /// probe each ancestor until a non-null result is found.
 ///
-/// Throws a [BlocNotFoundException]<[B]> if no ancestor yields a
+/// Throws a [NotFoundException]<[B]> if no ancestor yields a
 /// non-null result.
 ///
 /// This is an internal utility used by the public hooks ([useBloc],
@@ -39,7 +39,7 @@ B lookupBloc<B>(
     final foundBloc = found;
 
     if (foundBloc == null) {
-      throw BlocNotFoundException<B>();
+      throw NotFoundException<B>();
     }
 
     return foundBloc;

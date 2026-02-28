@@ -40,11 +40,11 @@ abstract base class BlocHooksException implements Exception {
 ///
 /// ```dart
 /// // No useBlocScope() call anywhere above this widget.
-/// final cubit = useBloc<MyCubit>(); // throws BlocScopeNotBoundException
+/// final cubit = useBloc<MyCubit>(); // throws NoBlocScopeFoundException
 /// ```
-final class BlocScopeNotBoundException extends BlocHooksException {
-  /// Creates a [BlocScopeNotBoundException] with a default message.
-  const BlocScopeNotBoundException()
+final class NoBlocScopeFoundException extends BlocHooksException {
+  /// Creates a [NoBlocScopeFoundException] with a default message.
+  const NoBlocScopeFoundException()
       : super('BlocScope is not bound to the current context. '
             'Make sure useBlocScope() is called in an ancestor widget.');
 }
@@ -61,9 +61,9 @@ final class BlocScopeNotBoundException extends BlocHooksException {
 /// // No bindBloc<MyCubit>() call for this context.
 /// scope.removeBloc<MyCubit, int>(context); // throws BlocRemovalException
 /// ```
-final class BlocRemovalException<B> extends BlocHooksException {
-  /// Creates a [BlocRemovalException] with a default message for type [B].
-  const BlocRemovalException()
+final class RemovalException<B> extends BlocHooksException {
+  /// Creates a [RemovalException] with a default message for type [B].
+  const RemovalException()
       : super(
           'Could not remove bloc of type $B. '
           'Make sure you call bindBloc<$B>() before removing it.',
@@ -78,11 +78,11 @@ final class BlocRemovalException<B> extends BlocHooksException {
 ///
 /// ```dart
 /// // No bindBloc<MyCubit>() call anywhere above this widget.
-/// final cubit = useBloc<MyCubit>(); // throws BlocNotFoundException
+/// final cubit = useBloc<MyCubit>(); // throws NotFoundException
 /// ```
-final class BlocNotFoundException<B> extends BlocHooksException {
-  /// Creates a [BlocNotFoundException] with a default message for type [B].
-  const BlocNotFoundException()
+final class NotFoundException<B> extends BlocHooksException {
+  /// Creates a [NotFoundException] with a default message for type [B].
+  const NotFoundException()
       : super(
           'Could not find bloc of type $B. '
           'Make sure you call bindBloc<$B>() before using useBloc<$B>().',
@@ -100,12 +100,12 @@ final class BlocNotFoundException<B> extends BlocHooksException {
 /// ```dart
 /// // Inside the same HookWidget.build():
 /// bindBloc<MyCubit>();
-/// bindBloc<MyCubit>(); // throws BlocDuplicateBindingException
+/// bindBloc<MyCubit>(); // throws AlreadyBindException
 /// ```
-final class BlocDuplicateBindingException<B> extends BlocHooksException {
-  /// Creates a [BlocDuplicateBindingException] for type [B] hosted by
+final class AlreadyBindException<B> extends BlocHooksException {
+  /// Creates a [AlreadyBindException] for type [B] hosted by
   /// the widget named [blocHostWidgetName].
-  const BlocDuplicateBindingException(String blocHostWidgetName)
+  const AlreadyBindException(String blocHostWidgetName)
       : super(
           'Cannot bind more than one bloc of type $B to '
           'the same $blocHostWidgetName host widget.',

@@ -100,7 +100,7 @@ final class _BindBlocHookState<B extends BlocBase<S>, S extends Object>
 
     assert(
       scope.getBloc<B>(context) == null,
-      BlocDuplicateBindingException<B>(context.widget.toString()).toString(),
+      AlreadyBindException<B>(context.widget.toString()).toString(),
     );
 
     final bloc = scope.createBloc<B, S>(context);

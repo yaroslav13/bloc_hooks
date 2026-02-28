@@ -189,7 +189,7 @@ void main() {
       );
 
       final exception = tester.takeException();
-      expect(exception, isA<BlocNotFoundException<BlocBase<TodoState>>>());
+      expect(exception, isA<NotFoundException<BlocBase<TodoState>>>());
     });
 
     testWidgets('exception when factory does not know the requested type',

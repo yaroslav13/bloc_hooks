@@ -112,7 +112,7 @@ void main() {
         ),
       );
 
-      expect(tester.takeException(), isA<BlocNotFoundException<TodoCubit>>());
+      expect(tester.takeException(), isA<NotFoundException<TodoCubit>>());
     });
 
     testWidgets('resolves the closest ancestor binding', (tester) async {
