@@ -27,6 +27,7 @@ class TodoList extends HookWidget {
       itemBuilder: (context, index) {
         final todo = state.todos[index];
         return ListTile(
+          onTap: () => cubit.openDetail(todo.id),
           leading: Checkbox(
             value: todo.done,
             onChanged: (_) => cubit.toggleTodo(todo.id),
@@ -37,9 +38,13 @@ class TodoList extends HookWidget {
               decoration: todo.done ? TextDecoration.lineThrough : null,
             ),
           ),
+          subtitle: todo.description.isNotEmpty
+              ? Text(todo.description,
+                  maxLines: 1, overflow: TextOverflow.ellipsis)
+              : null,
           trailing: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () => cubit.removeTodo(todo.id),
+            icon: const Icon(Icons.chevron_right),
+            onPressed: () => cubit.openDetail(todo.id),
           ),
         );
       },
