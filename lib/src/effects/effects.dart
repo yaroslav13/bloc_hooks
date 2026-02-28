@@ -12,7 +12,6 @@ base mixin Effects<E> on Closable implements EffectEmitter<E> {
   Stream<E> get effectsStream => _effectController.stream;
 
   @protected
-  @visibleForTesting
   @override
   void emitEffect(E effect) {
     if (isClosed || _isEffectsClosed) {
