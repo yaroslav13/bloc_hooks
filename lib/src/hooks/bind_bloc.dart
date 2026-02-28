@@ -92,7 +92,7 @@ final class _BindBlocHookState<B extends BlocBase<S>, S extends Object>
     extends HookState<void, _BindBlocHook<B, S>> {
   _BindBlocHookState();
 
-  VoidCallback? _removeBloc;
+  VoidCallback? _onDispose;
 
   @override
   void initHook() {
@@ -107,7 +107,7 @@ final class _BindBlocHookState<B extends BlocBase<S>, S extends Object>
 
     hook.onCreated?.call(bloc);
 
-    _removeBloc = () => _onRemoveBloc(scope, bloc);
+    _onDispose = () => _removeBloc(scope, bloc);
   }
 
   @override
@@ -117,14 +117,15 @@ final class _BindBlocHookState<B extends BlocBase<S>, S extends Object>
 
   @override
   void dispose() {
-    _removeBloc?.call();
-    _removeBloc = null;
+    _onDispose?.call();
+    _onDispose = null;
 
     super.dispose();
   }
 
-  void _onRemoveBloc(BlocScope scope, B bloc) {
-    scope.removeBloc<B, S>(context);
-    hook.onDisposed?.call(bloc);
+  void _removeBloc(BlocScope scope, B bloc) {
+    scope.removeBloc<B, S>(context).whenComplete(() {
+      hook.onDisposed?.call(bloc);
+    });
   }
 }

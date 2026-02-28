@@ -71,7 +71,9 @@ final class BlocScope {
   ///
   /// Throws a [BlocRemovalException] if no bloc of type [B] was found
   /// in [slot].
-  void removeBloc<B extends BlocBase<S>, S extends Object>(BuildContext slot) {
+  Future<void> removeBloc<B extends BlocBase<S>, S extends Object>(
+    BuildContext slot,
+  ) async {
     final bloc = getBloc<B>(slot);
     final blocRemoved = _slotsExpando[slot]?.remove(bloc) ?? false;
 
@@ -80,7 +82,7 @@ final class BlocScope {
     }
 
     _allBlocs.remove(bloc);
-    unawaited(bloc.close());
+    await bloc.close();
   }
 
   /// Returns the first bloc in [slot] that implements [EffectEmitter]<[E]>,
