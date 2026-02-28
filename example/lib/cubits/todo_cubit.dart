@@ -1,35 +1,46 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_hooks/bloc_hooks.dart';
 import 'package:bloc_hooks_example/cubits/todo_state.dart';
+import 'package:bloc_hooks_example/data/todo_repository.dart';
 import 'package:bloc_hooks_example/effects/todo_effect.dart';
-import 'package:bloc_hooks_example/models/todo.dart';
 
 final class TodoCubit extends Cubit<TodoState> with Effects<TodoEffect> {
-  TodoCubit() : super(const TodoState());
+  TodoCubit(this._repository) : super(const TodoState());
 
-  int _nextId = 0;
+  final TodoRepository _repository;
 
-  void addTodo(String title) {
-    final todo = Todo(id: '${_nextId++}', title: title, done: false);
-    emit(state.copyWith(todos: [...state.todos, todo]));
+  void loadTodos() {
+    emit(state.copyWith(todos: _repository.getAll()));
   }
 
-  void toggleTodo(String id) {
-    final updated = state.todos.map((t) {
-      return t.id == id ? t.copyWith(done: !t.done) : t;
-    }).toList();
+  Future<void> addTodo(String title) async {
+    await _repository.add(title);
+    emit(state.copyWith(todos: _repository.getAll()));
+  }
 
-    emit(state.copyWith(todos: updated));
+  Future<void> toggleTodo(String id) async {
+    final todo = _repository.getById(id);
+    if (todo == null) return;
 
-    if (updated.every((t) => t.done) && updated.isNotEmpty) {
+    await _repository.update(id, done: !todo.done);
+    final todos = _repository.getAll();
+    emit(state.copyWith(todos: todos));
+
+    if (todos.every((t) => t.done) && todos.isNotEmpty) {
       emitEffect(AllTasksCompleted());
     }
   }
 
-  void removeTodo(String id) {
-    final todo = state.todos.firstWhere((t) => t.id == id);
-    final updated = state.todos.where((t) => t.id != id).toList();
-    emit(state.copyWith(todos: updated));
-    emitEffect(ShowUndoSnackBar(todo.title));
+  Future<void> editTodo(String id, {String? title, String? description}) async {
+    await _repository.update(id, title: title, description: description);
+    emit(state.copyWith(todos: _repository.getAll()));
   }
+
+  Future<void> removeTodo(String id) async {
+    final removed = await _repository.remove(id);
+    emit(state.copyWith(todos: _repository.getAll()));
+    emitEffect(ShowUndoSnackBar(removed.title));
+  }
+
+  void openDetail(String id) => emitEffect(NavigateToDetail(id));
 }

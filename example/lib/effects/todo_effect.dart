@@ -7,3 +7,9 @@ final class ShowUndoSnackBar implements TodoEffect {
 }
 
 final class AllTasksCompleted implements TodoEffect {}
+
+final class NavigateToDetail implements TodoEffect {
+  const NavigateToDetail(this.todoId);
+
+  final String todoId;
+}
