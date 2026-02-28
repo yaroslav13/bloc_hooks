@@ -1,0 +1,19 @@
+name: bloc_hooks_example
+description: A complete example demonstrating the bloc_hooks package.
+publish_to: none
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: ">=3.27.0"
+
+dependencies:
+  bloc: ^9.2.0
+  bloc_hooks:
+    path: ../
+  flutter:
+    sdk: flutter
+  flutter_hooks: ^0.21.3+1
+
+flutter:
+  uses-material-design: true
+

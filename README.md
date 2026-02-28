@@ -34,16 +34,9 @@ Add `bloc_hooks` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  bloc_hooks:
-    git:
-      url: https://github.com/<your-org>/bloc_hooks.git
-```
-
-Or, if published to [pub.dev](https://pub.dev):
-
-```yaml
-dependencies:
-  bloc_hooks: ^1.0.0
+  bloc_hooks: ^version
+  bloc: ^version
+  flutter_hooks: ^version
 ```
 
 Then run:
