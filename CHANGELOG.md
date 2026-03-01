@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Polished the README with cleaner descriptions, specifically highlighting the simplified, in-place bloc injection and reduced boilerplate.
+
 ## 1.0.0
 
 Initial release of `bloc_hooks` — a hooks-based integration for [bloc](https://pub.dev/packages/bloc) state management with [flutter_hooks](https://pub.dev/packages/flutter_hooks).
