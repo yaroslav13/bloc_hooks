@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+- Updated compatibility badges to Dart 3.10.8 and Flutter 3.38.9.
+
 ## 1.0.1
 
 - Polished the README with cleaner descriptions, specifically highlighting the simplified, in-place bloc injection and reduced boilerplate.
