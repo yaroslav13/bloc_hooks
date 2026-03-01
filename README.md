@@ -2,10 +2,10 @@
 
 The state management solution for Flutter, based on the [bloc](https://pub.dev/packages/bloc) state management and [flutter_hooks](https://pub.dev/packages/flutter_hooks). It reduces boilerplate, allows almost all widgets to remain stateless, and simplifies bloc injection within the widget tree.
 
-[![Dart](https://img.shields.io/badge/Dart-%3E%3D3.6.0-blue)](https://dart.dev)
-[![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.27.0-blue)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-%3E%3D3.10.8-blue)](https://dart.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.38.9-blue)](https://flutter.dev)
 [![bloc](https://img.shields.io/badge/bloc-%5E9.2.0-blueviolet)](https://pub.dev/packages/bloc)
-[![flutter_hooks](https://img.shields.io/badge/flutter--hooks-%5E0.18.0-blueviolet)](https://pub.dev/packages/flutter_hooks)
+[![flutter_hooks](https://img.shields.io/badge/flutter--hooks-%5E0.21.3+1-blueviolet)](https://pub.dev/packages/flutter_hooks)
 
 ---
 
